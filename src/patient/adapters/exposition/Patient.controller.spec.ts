@@ -1,24 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Observable } from 'rxjs';
-import { Patient } from '../model/Patient';
-import { PatientDto } from '../model/PatientDto';
-import { PatientService } from '../service/Patient.service';
+import { Patient } from '../../domain/model/Patient';
+import { PatientDto } from './dto/PatientDto';
+import { PatientService } from '../../domain/usecases/Patient.service';
 import { PatientController } from './Patient.controller';
+import { FindPatientByIdParams } from 'src/patient/adapters/exposition/dto/FindPatientByIdParams';
 
 // TODO: we should work on this
-// for now, tests are too simple
-// need trhowing error and httpCode Status
+// need throwing error and httpCode Status
 describe('PatientController', () => {
     let patientController: PatientController;
+    let patientService: PatientService;
 
     const mockPatientService = {
         findAllPatients: jest.fn(() => {
-            return [
-                new Patient(1, 'lastname1', 'firstname1', 'address1', 'email1'),
-                new Patient(2, 'lastname2', 'firstname2', 'address2', 'email2'),
-                new Patient(3, 'lastname3', 'firstname3', 'address3', 'email3'),
-                new Patient(4, 'lastname4', 'firstname4', 'address4', 'email4'),
-            ];
+            return [];
         }),
         findPatientById: jest.fn(id => {
             return new Patient(id, 'lastname', 'firstname', 'address', 'email')
@@ -39,6 +34,7 @@ describe('PatientController', () => {
             .compile();
 
         patientController = module.get<PatientController>(PatientController);
+        patientService = module.get<PatientService>(PatientService)
     });
 
     describe('root', () => {
@@ -62,13 +58,14 @@ describe('PatientController', () => {
     describe('findPatientById', () => {
         it(`GET on /patients/id should call the patientService`, () => {
             // given
-            const currentId = 2;
+            const currentId = new FindPatientByIdParams();
+            currentId.id = 2;
 
             // when
             patientController.findPatientById(currentId);
 
             // then
-            expect(mockPatientService.findPatientById).toHaveBeenCalledWith(currentId);
+            expect(mockPatientService.findPatientById).toHaveBeenCalledWith(2);
             expect(mockPatientService.findPatientById).toHaveBeenCalledTimes(1);
         });
     });
