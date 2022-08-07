@@ -6,19 +6,19 @@ import { Patient } from '../model/Patient';
 
 
 describe('PatientService', () => {
-    let service: PatientService;
+    let patientService: PatientService;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [PatientService],
         }).compile();
 
-        service = module.get<PatientService>(PatientService);
+        patientService = module.get<PatientService>(PatientService);
     });
 
     describe('root', () => {
         it('should be defined', () => {
-            expect(service).toBeDefined();
+            expect(patientService).toBeDefined();
         });
     });
 
@@ -33,7 +33,7 @@ describe('PatientService', () => {
             ];
 
             // when
-            const patientList = service.findAllPatients();
+            const patientList = patientService.findAllPatients();
 
             // then
             expect(patientList.length).toBe(4);
@@ -47,7 +47,7 @@ describe('PatientService', () => {
             const patientId = 5;
 
             // when
-            const foundedPatient = service.findPatientById(patientId);
+            const foundedPatient = patientService.findPatientById(patientId);
 
             // then
             expect(foundedPatient).toBe(null);
@@ -59,7 +59,7 @@ describe('PatientService', () => {
             const patientId = 1;
 
             // when
-            const foundedPatient = service.findPatientById(patientId);
+            const foundedPatient = patientService.findPatientById(patientId);
 
             // then
             expect(foundedPatient.$id).toBe(1);
@@ -76,15 +76,33 @@ describe('PatientService', () => {
             const newPatient = new PatientDto(5, 'lastname5', 'firstname5', 'address5', 'email5');
 
             // when
-            const savedPatient = service.savePatient(newPatient);
+            const savedPatient = patientService.savePatient(newPatient);
 
             // then
-            expect(service.patientsDatabase.length).toBe(5);
+            expect(patientService.patientsDatabase.length).toBe(5);
             expect(savedPatient.$id).toBe(5);
             expect(savedPatient.$lastname).toBe('lastname5');
             expect(savedPatient.$firstname).toBe('firstname5');
             expect(savedPatient.$address).toBe('address5');
             expect(savedPatient.$email).toBe('email5');
+        });
+    });
+
+    describe('updatePatient', () => {
+        it('PUT on /patients/id should update an existing patient', () => {
+            // given.
+            const patientId = 2;
+            const updatedPatientDto = new PatientDto(2, 'newLastname2', 'newFirstname2', 'newAddress2', 'email2')
+
+            // when
+            patientService.updatePatient(patientId, updatedPatientDto);
+
+            // // then
+            expect(patientService.patientsDatabase[patientId - 1].$id).toEqual(2);
+            expect(patientService.patientsDatabase[patientId - 1].$lastname).toEqual('newLastname2');
+            expect(patientService.patientsDatabase[patientId - 1].$firstname).toEqual('newFirstname2');
+            expect(patientService.patientsDatabase[patientId - 1].$address).toEqual('newAddress2');
+            expect(patientService.patientsDatabase[patientId - 1].$email).toEqual('email2');
         });
     });
 });

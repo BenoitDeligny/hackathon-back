@@ -21,11 +21,14 @@ describe('PatientController', () => {
             ];
         }),
         findPatientById: jest.fn(id => {
-            return new Patient(id, 'lastname', 'firstname', 'address', 'email')
+            return new Patient(id, 'lastname', 'firstname', 'address', 'email');
         }),
         savePatient: jest.fn(dto => {
-            return new Patient(dto.id, dto.lastname, dto.firstname, dto.address, dto.email)
+            return new Patient(dto.id, dto.lastname, dto.firstname, dto.address, dto.email);
         }),
+        updatePatient: jest.fn((id, dto) => {
+            return new Patient(dto.id, dto.lastname, dto.firstname, dto.address, dto.email);
+        })
     };
 
     beforeEach(async () => {
@@ -84,6 +87,21 @@ describe('PatientController', () => {
             // then
             expect(mockPatientService.savePatient).toHaveBeenCalledWith(patientDto);
             expect(mockPatientService.savePatient).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('updatePatient', () => {
+        it(`PUT on /patients/id should call the patientService`, () => {
+            // given
+            const patientId = 3;
+            const updatedPatient = new PatientDto(3, 'newLastname', 'newFirstname', 'newAddress', 'newEmail')
+
+            // when
+            patientController.updatePatient(patientId, updatedPatient);
+
+            // then
+            expect(mockPatientService.updatePatient).toHaveBeenCalledWith(3, updatedPatient);
+            expect(mockPatientService.updatePatient).toHaveBeenCalledTimes(1);
         });
     });
 });

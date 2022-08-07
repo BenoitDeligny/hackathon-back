@@ -7,6 +7,7 @@ import { PatientDto } from "../model/PatientDto";
 export class PatientService {
     // Temporary data mock
     // Should not be public
+    // Remove IDs or find a way to auto-generate id for this fake DB
     public patientsDatabase: Patient[] = [
         new Patient(1, 'lastname1', 'firstname1', 'address1', 'email1'),
         new Patient(2, 'lastname2', 'firstname2', 'address2', 'email2'),
@@ -36,5 +37,24 @@ export class PatientService {
         );
         this.patientsDatabase = [...this.patientsDatabase, savedPatient];
         return savedPatient; // call the repository instead
+    }
+
+    public updatePatient(id: number, updatedPatientDto: PatientDto): Patient {
+        // This will be used when we will have a real DB
+        // Or will use the method findByIdAndUpdate()
+        let patientToUpdate = this.findPatientById(id);
+        patientToUpdate = new Patient(
+            updatedPatientDto.id, // TODO: We will NOT update this field later
+            updatedPatientDto.lastname,
+            updatedPatientDto.firstname,
+            updatedPatientDto.address,
+            updatedPatientDto.email
+        );
+
+        // Temporary logic to moidify the fake DB
+        // call the repository instead
+        this.patientsDatabase[id - 1] = patientToUpdate;
+
+        return patientToUpdate;
     }
 }
