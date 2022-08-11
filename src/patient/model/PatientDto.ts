@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from "class-validator";
+import { IsObject, IsOptional, IsString } from "class-validator";
 
 export class PatientDto {
     public id: number; // TODO: remove it when real DB will be set up
@@ -16,11 +16,23 @@ export class PatientDto {
     @IsString()
     public email: string;
 
-    constructor(id: number, lastname: string, firstname: string, address: string, email: string) {
+    @IsOptional()
+    @IsObject()
+    public appointments: AppointmentDto[];
+
+    constructor(id: number, lastname: string, firstname: string, address: string, email: string, appointments: AppointmentDto[]) {
         this.id = id;
         this.lastname = lastname;
         this.firstname = firstname;
         this.address = address;
-        this.email = email
+        this.email = email;
+        this.appointments = appointments;
     }
+}
+class AppointmentDto {
+    @IsString()
+    public date: string;
+
+    @IsString()
+    public purpose: string[];
 }

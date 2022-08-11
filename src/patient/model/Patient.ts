@@ -1,17 +1,20 @@
+import { Appointment } from "src/appointment/model/Appointment";
+
 export class Patient {
     private id: number;    // Waiting for database definition UUID ?
     private lastname: string;
     private firstname: string;
     private address: string; //
     private email: string;
-    // private appointment: Appointment;     // Waiting for appointment definition
+    private appointments: Appointment[];
 
-    constructor($id: number, $lastName: string, $firstName: string, $address: string, $email: string) {
+    constructor($id: number, $lastName: string, $firstName: string, $address: string, $email: string, $appointments: Appointment[]) {
         this.id = $id;
         this.lastname = $lastName;
         this.firstname = $firstName;
         this.address = $address;
         this.email = $email;
+        this.appointments = $appointments;
     }
 
     // GETTERS
@@ -34,6 +37,10 @@ export class Patient {
 
     public get $email(): string {
         return this.email;
+    }
+
+    public get $appointments(): Appointment[] {
+        return this.appointments;
     }
 
 }

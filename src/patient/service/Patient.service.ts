@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { EMPTY, from, Observable, of } from "rxjs";
+import { Appointment } from "../../appointment/model/Appointment";
 import { Patient } from "../model/Patient";
 import { PatientDto } from "../model/PatientDto";
 
@@ -9,10 +9,18 @@ export class PatientService {
     // Should not be public
     // Remove IDs or find a way to auto-generate id for this fake DB
     public patientsDatabase: Patient[] = [
-        new Patient(1, 'lastname1', 'firstname1', 'address1', 'email1'),
-        new Patient(2, 'lastname2', 'firstname2', 'address2', 'email2'),
-        new Patient(3, 'lastname3', 'firstname3', 'address3', 'email3'),
-        new Patient(4, 'lastname4', 'firstname4', 'address4', 'email4'),
+        new Patient(1, 'lastname1', 'firstname1', 'address1', 'email1', [
+            new Appointment(new Date('2022-04-25'), ['Pédicure', 'Semelles']),
+            new Appointment(new Date('2022-07-28'), ['Réglage semelles']),
+        ]),
+        new Patient(2, 'lastname2', 'firstname2', 'address2', 'email2', [
+            new Appointment(new Date('2022-06-11'), ['Soin ongles']),
+            new Appointment(new Date('2022-09-02'), ['Semelles']),
+        ]),
+        new Patient(3, 'lastname3', 'firstname3', 'address3', 'email3', [
+            new Appointment(new Date('2022-03-22'), ['Pédicure']),
+            new Appointment(new Date('2022-08-01'), ['Soin genou']),
+        ]),
     ];
 
     public findAllPatients(): Patient[] {
@@ -28,33 +36,49 @@ export class PatientService {
     }
 
     public savePatient(newPatient: PatientDto): Patient {
-        const savedPatient = new Patient(
-            newPatient.id,
-            newPatient.lastname,
-            newPatient.firstname,
-            newPatient.address,
-            newPatient.email
-        );
+        const savedPatient = this.mapToPatient(newPatient);
+
         this.patientsDatabase = [...this.patientsDatabase, savedPatient];
+
         return savedPatient; // call the repository instead
     }
 
+
+    // What to update ?
     public updatePatient(id: number, updatedPatientDto: PatientDto): Patient {
         // This will be used when we will have a real DB
         // Or will use the method findByIdAndUpdate()
         let patientToUpdate = this.findPatientById(id);
-        patientToUpdate = new Patient(
-            updatedPatientDto.id, // TODO: We will NOT update this field later
-            updatedPatientDto.lastname,
-            updatedPatientDto.firstname,
-            updatedPatientDto.address,
-            updatedPatientDto.email
-        );
+        patientToUpdate = this.mapToPatient(updatedPatientDto);
 
         // Temporary logic to moidify the fake DB
         // call the repository instead
         this.patientsDatabase[id - 1] = patientToUpdate;
 
         return patientToUpdate;
+    }
+
+    private mapToPatient(dto: PatientDto): Patient {
+        return new Patient(
+            dto.id,
+            dto.lastname,
+            dto.firstname,
+            dto.address,
+            dto.email,
+            this.mapToAppointment(dto)
+        );
+    }
+
+    private mapToAppointment(dto: PatientDto): Appointment[] {
+        let patientAppointments: Appointment[] = [];
+        for (const appointment of dto.appointments) {
+
+            patientAppointments.push(new Appointment(
+                new Date(appointment.date),
+                appointment.purpose)
+            );
+        }
+
+        return patientAppointments;
     }
 }

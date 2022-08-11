@@ -28,4 +28,7 @@ export class PatientController {
     updatePatient(@Param('id') id: number, @Body() patient: PatientDto): Patient {
         return this.patientService.updatePatient(id, patient);
     }
+
+    // should have update patient info
+    // should have update / add patient appointment
 }

@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PatientService } from './Patient.service';
-import { take, toArray } from "rxjs";
 import { PatientDto } from '../model/PatientDto';
-import { Patient } from '../model/Patient';
+import { Appointment } from '../../appointment/model/Appointment';
 
 
 describe('PatientService', () => {
@@ -25,19 +24,12 @@ describe('PatientService', () => {
     describe('findAllPatients', () => {
         it('GET on /patients should return all patients', () => {
             // given
-            const actualPatientList = [
-                new Patient(1, 'lastname1', 'firstname1', 'address1', 'email1'),
-                new Patient(2, 'lastname2', 'firstname2', 'address2', 'email2'),
-                new Patient(3, 'lastname3', 'firstname3', 'address3', 'email3'),
-                new Patient(4, 'lastname4', 'firstname4', 'address4', 'email4'),
-            ];
 
             // when
             const patientList = patientService.findAllPatients();
 
             // then
-            expect(patientList.length).toBe(4);
-            expect(patientList).toEqual(actualPatientList);
+            expect(patientList.length).toBe(3);
         });
     });
 
@@ -72,18 +64,19 @@ describe('PatientService', () => {
     describe('savePatient', () => {
         it('POST on /patients should save new patient', () => {
             // given
-            const newPatient = new PatientDto(5, 'lastname5', 'firstname5', 'address5', 'email5');
+            const newPatient = new PatientDto(4, 'lastname4', 'firstname4', 'address4', 'email4', [{ 'date': '2022-08-30', 'purpose': ['Semelles'] }]);
 
             // when
             const savedPatient = patientService.savePatient(newPatient);
 
             // then
-            expect(patientService.patientsDatabase.length).toBe(5);
-            expect(savedPatient.$id).toBe(5);
-            expect(savedPatient.$lastname).toBe('lastname5');
-            expect(savedPatient.$firstname).toBe('firstname5');
-            expect(savedPatient.$address).toBe('address5');
-            expect(savedPatient.$email).toBe('email5');
+            expect(patientService.patientsDatabase.length).toBe(4);
+            expect(savedPatient.$id).toBe(4);
+            expect(savedPatient.$lastname).toBe('lastname4');
+            expect(savedPatient.$firstname).toBe('firstname4');
+            expect(savedPatient.$address).toBe('address4');
+            expect(savedPatient.$email).toBe('email4');
+            expect(savedPatient.$appointments).toEqual([new Appointment(new Date('2022-08-30'), ['Semelles'])]);
         });
     });
 
@@ -91,7 +84,7 @@ describe('PatientService', () => {
         it('PUT on /patients/id should update an existing patient', () => {
             // given.
             const patientId = 2;
-            const updatedPatientDto = new PatientDto(2, 'newLastname2', 'newFirstname2', 'newAddress2', 'email2')
+            const updatedPatientDto = new PatientDto(2, 'newLastname2', 'newFirstname2', 'newAddress2', 'email2', [{ 'date': '2022-08-30', 'purpose': ['Semelles'] }])
 
             // when
             patientService.updatePatient(patientId, updatedPatientDto);
@@ -102,6 +95,7 @@ describe('PatientService', () => {
             expect(patientService.patientsDatabase[patientId - 1].$firstname).toEqual('newFirstname2');
             expect(patientService.patientsDatabase[patientId - 1].$address).toEqual('newAddress2');
             expect(patientService.patientsDatabase[patientId - 1].$email).toEqual('email2');
+            expect(patientService.patientsDatabase[patientId - 1].$appointments).toEqual([new Appointment(new Date('2022-08-30'), ['Semelles'])]);
         });
     });
 });
