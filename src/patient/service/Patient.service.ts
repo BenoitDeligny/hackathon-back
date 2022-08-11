@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { EMPTY, from, Observable, of } from "rxjs";
 import { Patient } from "../model/Patient";
 import { PatientDto } from "../model/PatientDto";
@@ -20,9 +20,9 @@ export class PatientService {
     }
 
     public findPatientById(id: number): Patient {
-        const foundedPatient = this.patientsDatabase.find(patient => patient.$id === id);
-        if (!foundedPatient) {
-            return null; // Throw something instead
+        const foundedPatient = this.patientsDatabase.find((patient) => patient.$id === id) ?? null;
+        if (foundedPatient === null) {
+            throw new NotFoundException(`The patient with id: ${id} was not found.`);
         }
         return foundedPatient; // call the repository instead
     }

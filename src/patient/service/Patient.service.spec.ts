@@ -47,10 +47,9 @@ describe('PatientService', () => {
             const patientId = 5;
 
             // when
-            const foundedPatient = patientService.findPatientById(patientId);
 
             // then
-            expect(foundedPatient).toBe(null);
+            expect(() => patientService.findPatientById(patientId)).toThrow('The patient with id: 5 was not found.');
         });
 
 
