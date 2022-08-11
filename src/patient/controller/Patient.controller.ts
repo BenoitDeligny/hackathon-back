@@ -20,7 +20,6 @@ export class PatientController {
 
     @Post('')
     savePatient(@Body() patient: PatientDto): Patient {
-        // TODO: check each non-nullable field
         // TODO: generate a random ID (UUID ?) ?
         return this.patientService.savePatient(patient);
     }
