@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { Patient } from "../model/Patient";
 import { PatientDto } from "../../adapters/exposition/dto/PatientDto";
 import { PatientRepository } from "../ports/Patient.repository";
@@ -16,8 +16,8 @@ export class PatientService {
 
     public findPatientById(id: number): Patient {
         const foundedPatient = this.patientInMemory.findPatientById(id);
-        if (!foundedPatient) {
-            return null; // Throw something instead
+        if (foundedPatient === null) {
+            throw new NotFoundException(`The patient with id: ${id} was not found.`);
         }
         return foundedPatient;
     }

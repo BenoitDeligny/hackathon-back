@@ -3,6 +3,7 @@ import { PatientService } from './Patient.service';
 import { Patient } from '../model/Patient';
 import { PatientInMemory } from 'src/patient/adapters/infra/PatientInMemory.repository';
 import { PatientRepository } from 'src/patient/domain/ports/Patient.repository';
+import { NotFoundException } from '@nestjs/common';
 
 describe('PatientService', () => {
     let service: PatientService;
@@ -58,6 +59,7 @@ describe('PatientService', () => {
 
             // then
             expect(foundedPatient).toBe(null);
+            expect(() => service.findPatientById(patientId)).toThrow('The patient with id: 5 was not found.')
         });
 
 
