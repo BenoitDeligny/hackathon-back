@@ -1,19 +1,26 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PatientService } from './Patient.service';
-import { take, toArray } from "rxjs";
-import { PatientDto } from '../model/PatientDto';
 import { Patient } from '../model/Patient';
-
+import { PatientInMemory } from 'src/patient/adapters/infra/PatientInMemory.repository';
+import { PatientRepository } from 'src/patient/domain/ports/Patient.repository';
 
 describe('PatientService', () => {
     let service: PatientService;
+    let inMemoryDatabase: PatientRepository;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            providers: [PatientService],
+            providers: [
+                PatientService,
+                {
+                    provide: PatientRepository,
+                    useClass: PatientInMemory
+                }
+            ],
         }).compile();
 
         service = module.get<PatientService>(PatientService);
+        inMemoryDatabase = module.get<PatientRepository>(PatientRepository);
     });
 
     describe('root', () => {
@@ -33,7 +40,7 @@ describe('PatientService', () => {
             ];
 
             // when
-            const patientList = service.findAllPatients();
+            const patientList = inMemoryDatabase.findAllPatients();
 
             // then
             expect(patientList.length).toBe(4);
@@ -47,7 +54,7 @@ describe('PatientService', () => {
             const patientId = 5;
 
             // when
-            const foundedPatient = service.findPatientById(patientId);
+            const foundedPatient = inMemoryDatabase.findPatientById(patientId);
 
             // then
             expect(foundedPatient).toBe(null);
@@ -59,7 +66,7 @@ describe('PatientService', () => {
             const patientId = 1;
 
             // when
-            const foundedPatient = service.findPatientById(patientId);
+            const foundedPatient = inMemoryDatabase.findPatientById(patientId);
 
             // then
             expect(foundedPatient.$id).toBe(1);
@@ -73,13 +80,13 @@ describe('PatientService', () => {
     describe('savePatient', () => {
         it('POST on /patients should save new patient', () => {
             // given
-            const newPatient = new PatientDto(5, 'lastname5', 'firstname5', 'address5', 'email5');
+            const newPatient = new Patient(5, 'lastname5', 'firstname5', 'address5', 'email5');
 
             // when
-            const savedPatient = service.savePatient(newPatient);
+            const savedPatient = inMemoryDatabase.savePatient(newPatient);
 
             // then
-            expect(service.patientsDatabase.length).toBe(5);
+            expect(inMemoryDatabase.findAllPatients().length).toBe(5);
             expect(savedPatient.$id).toBe(5);
             expect(savedPatient.$lastname).toBe('lastname5');
             expect(savedPatient.$firstname).toBe('firstname5');
