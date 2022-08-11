@@ -1,28 +1,31 @@
 export class Patient {
-    // Waiting for database definition
-    // private id: number;
-    private lastName: string;
-    private firstName: string;
-    private address: string;
+    private id: number;    // Waiting for database definition UUID ?
+    private lastname: string;
+    private firstname: string;
+    private address: string; //
     private email: string;
-    // Waiting for appointment definition
-    // private appointment: Appointment
+    // private appointment: Appointment;     // Waiting for appointment definition
 
-    constructor($lastName: string, $firstName: string, $address: string, $email: string) {
-        this.lastName = $lastName;
-        this.firstName = $firstName;
+    constructor($id: number, $lastName: string, $firstName: string, $address: string, $email: string) {
+        this.id = $id;
+        this.lastname = $lastName;
+        this.firstname = $firstName;
         this.address = $address;
         this.email = $email;
     }
 
     // GETTERS
 
-    public get $lastName(): string {
-        return this.lastName;
+    public get $id(): number {
+        return this.id;
     }
 
-    public get $firstName(): string {
-        return this.firstName;
+    public get $lastname(): string {
+        return this.lastname;
+    }
+
+    public get $firstname(): string {
+        return this.firstname;
     }
 
     public get $address(): string {
